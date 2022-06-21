@@ -1,10 +1,6 @@
-# from models import CreatedModel
 from django.db import models
 from django.core.validators import MinValueValidator
 from users.models import User
-# from django.contrib.auth import get_user_model
-
-# User = get_user_model()
 
 
 class Ingredient(models.Model):
@@ -13,9 +9,9 @@ class Ingredient(models.Model):
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, unique=True)
     slug = models.SlugField(unique=True)
-    color = models.CharField(max_length=7, default="#ffffff")
+    color = models.CharField(max_length=7, default="#ffffff", unique=True)
 
     class Meta:
         ordering = ('name',)
@@ -34,13 +30,6 @@ class Recipe(models.Model):
         related_name='posts',
         verbose_name='Автор',
     )
-    ingredients = models.ManyToManyField(
-        Ingredient,
-        related_name='ingredients',
-        related_query_name='ingredient',
-        verbose_name='Ингредиенты',
-        help_text='Выберите ингредиенты',
-    )
     name = models.CharField(max_length=200)
     image = models.ImageField(
         'Картинка',
@@ -52,9 +41,14 @@ class Recipe(models.Model):
             validators=[MinValueValidator(
                 1, message='Время приготовления должно быть больше'
             )])
+    created = models.DateTimeField(
+        'Дата публикации',
+        auto_now_add=True,
+        db_index=True
+    )
 
     class Meta:
-        # ordering = ('-created',)
+        ordering = ('-created',)
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 
@@ -62,22 +56,24 @@ class Recipe(models.Model):
         return self.text
 
 
-class Subscription(models.Model):
-    user = models.ForeignKey(
-        User,
+class IngredientsForRecipe(models.Model):
+    ingredient = models.ForeignKey(
+        Ingredient, on_delete=models.CASCADE, related_name='recipes')
+    recipe = models.ForeignKey(
+        Recipe,
         on_delete=models.CASCADE,
-        related_name='subscriber',
+        related_name='ingredients'
     )
-    author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='publisher',
-    )
+    amount = models.IntegerField(
+            validators=[MinValueValidator(
+                1, message='Количество должно быть больше'
+            )])
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['user', 'author'], name='subscription'
+                fields=('ingredient', 'recipe'),
+                name='unique_recipe_ingredient'
             )
         ]
 
@@ -86,17 +82,33 @@ class Favorite(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='user',
+        related_name='favorites'
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='favorite',
+        related_name='is_favorited',
     )
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['user', 'recipe'], name='favorite'
+                fields=['user', 'recipe'], name='unique_favorite'
+            )
+        ]
+
+
+class RecipeInCart(models.Model):
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, related_name='is_in_shopping_cart'
+    )
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE,  related_name='carts'
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipe', 'user'], name='one_recipe_in_cart'
             )
         ]
