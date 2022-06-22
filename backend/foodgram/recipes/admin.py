@@ -1,9 +1,8 @@
 from django.contrib import admin
 from django.contrib.admin import display
-from django.db.models import Count
+from users.models import Subscription, User
 
-from .models import Recipe, Ingredient, Tag, IngredientsForRecipe
-from users.models import User, Subscription
+from .models import Ingredient, IngredientsForRecipe, Recipe, Tag
 
 
 class IngredientsForRecipeInline(admin.TabularInline):
@@ -21,10 +20,8 @@ class RecipeAdmin(admin.ModelAdmin):
 
     @display(description='Добавлений в Избранное:')
     def in_favorited(self, obj):
-        queryset = obj.is_favorited.count()
-        if queryset:
-            return queryset
-        return None
+        count = obj.is_favorited.count()
+        return count
 
 
 class UserAdmin(admin.ModelAdmin):

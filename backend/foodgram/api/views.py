@@ -1,21 +1,19 @@
-from .permissions import IsRecipeOwnerOrReadOnly
-from .filters import RecipeFilter
-from recipes.models import Tag, Recipe, Ingredient, Favorite, RecipeInCart
-from rest_framework import viewsets
-from .serializers import (TagSerializer, RecipeSerializer,
-                          IngredientSerializer,
-                          FavoriteSerializer,
-                          RecipeInCartSerializer)
-from rest_framework.pagination import PageNumberPagination
-from django_filters.rest_framework import DjangoFilterBackend
-from .mixins import RetrieveListViewSet
-from django.shortcuts import get_object_or_404
-from rest_framework.response import Response
-from rest_framework import status
 from django.db.models import Sum
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, render
+from django_filters.rest_framework import DjangoFilterBackend
+from recipes.models import Favorite, Ingredient, Recipe, RecipeInCart, Tag
+from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
-from rest_framework.permissions import (AllowAny, IsAuthenticated)
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+
+from .filters import RecipeFilter
+from .mixins import CreateDestroy, RetrieveListViewSet
+from .permissions import IsRecipeOwnerOrReadOnly
+from .serializers import (IngredientSerializer,
+                          RecipeSerializer, TagSerializer)
 
 
 class TagsViewSet(RetrieveListViewSet):
@@ -60,52 +58,12 @@ class IngredientViewSet(RetrieveListViewSet):
         return Response(serializer.data)
 
 
-class FavoriteViewSet(viewsets.ModelViewSet):
+class FavoriteViewSet(CreateDestroy):
     queryset = Favorite.objects.all()
-    serializer_class = FavoriteSerializer
-    permission_classes = [IsAuthenticated]
-    http_method_names = ['post', 'delete']
-
-    def perform_create(self, request, recipe_id):
-        recipe = get_object_or_404(Recipe, id=recipe_id)
-        serializer = FavoriteSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(
-                recipe_id=recipe.id, user=self.request.user
-            )
-            return Response(serializer.data)
-
-    def perform_destroy(self, request, recipe_id):
-        recipe = get_object_or_404(Recipe, id=recipe_id)
-        try:
-            Favorite.objects.get(recipe=recipe, user=request.user).delete()
-        except Favorite.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class ShoppingCartViewSet(viewsets.ModelViewSet):
+class ShoppingCartViewSet(CreateDestroy):
     queryset = RecipeInCart.objects.all()
-    serializer_class = RecipeInCartSerializer
-    permission_classes = [IsAuthenticated]
-    http_method_names = ['post', 'delete']
-
-    def perform_create(self, request, recipe_id):
-        recipe = get_object_or_404(Recipe, id=recipe_id)
-        serializer = RecipeInCartSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(
-                recipe=recipe, user=self.request.user
-            )
-            return Response(serializer.data)
-
-    def perform_destroy(self, request, recipe_id):
-        recipe = get_object_or_404(Recipe, id=recipe_id)
-        try:
-            RecipeInCart.objects.get(recipe=recipe, user=request.user).delete()
-        except RecipeInCart.DoesNotExist:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET'])
@@ -116,7 +74,7 @@ def download_shopping_cart(request):
             'ingredients__ingredient__name',
             'ingredients__ingredient__measurement_unit'
         ).order_by('name').annotate(
-            total_amount=Sum('ingredients__amount')).all()
+            total_amount=Sum('ingredients__amount'))
         text = 'Список покупок:\n'
         for number, ingredient in enumerate(ingredients, start=1):
             amount = ingredient['total_amount']
@@ -134,3 +92,11 @@ def download_shopping_cart(request):
         response['Content-Disposition'] = f'attachment; filename={filename}'
         return HttpResponse(text, content_type='text/plain')
     return HttpResponse(status=status.HTTP_401_UNAUTHORIZED)
+
+
+def page_not_found(request, exception):
+    return render(request, {'path': request.path}, status=404)
+
+
+def integrity_error(request):
+    return render(request, {'path': request.path}, status=400)

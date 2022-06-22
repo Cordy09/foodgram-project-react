@@ -1,7 +1,7 @@
-from .models import User
 from recipes.models import Recipe
-
 from rest_framework import serializers
+
+from .models import User
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -16,12 +16,13 @@ class UserReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = (
-            'email', 'username', 'first_name', 'last_name', 'is_subscribed', 'id')
+            'email', 'username', 'first_name',
+            'last_name', 'is_subscribed', 'id')
         model = User
 
     def get_is_subscribed(self, obj):
-        caller = self.context['request'].user
-        if caller.id is not None:
+        if self.context['request'].user.is_authenticated:
+            caller = self.context['request'].user
             return obj.publishers.filter(user=caller).exists()
         return False
 

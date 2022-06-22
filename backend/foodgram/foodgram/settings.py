@@ -1,4 +1,5 @@
 import os
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -7,7 +8,7 @@ load_dotenv()
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-SECRET_KEY = 'xdxps39((m7cnb#ugw!8g1)(x&br7v3s53x@-v9e_(n&_ee^f*'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = True
 
@@ -63,7 +64,6 @@ INSTALLED_APPS = [
     'api',
     'users',
     'recipes',
-    'core',
     'djoser',
 ]
 

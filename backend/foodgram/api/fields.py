@@ -1,5 +1,4 @@
 import webcolors
-
 from rest_framework import serializers
 
 
@@ -12,5 +11,5 @@ class Hex2NameColor(serializers.Field):
         try:
             data = webcolors.hex_to_name(data)
         except ValueError:
-            pass
+            raise serializers.ValidationError('неизвестный цвет')
         return data

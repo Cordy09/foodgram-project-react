@@ -1,10 +1,8 @@
+from api.views import (FavoriteViewSet, IngredientViewSet, RecipesViewSet,
+                       ShoppingCartViewSet, TagsViewSet,
+                       download_shopping_cart)
 from django.urls import include, path
 from rest_framework import routers
-
-from api.views import (TagsViewSet, RecipesViewSet,
-                       IngredientViewSet, FavoriteViewSet,
-                       download_shopping_cart,
-                       ShoppingCartViewSet)
 
 router = routers.DefaultRouter()
 router.register('recipes', RecipesViewSet, basename='recipes')
@@ -26,5 +24,5 @@ urlpatterns = [
         name='favorite')
 ]
 
-handler404 = 'core.views.page_not_found'
-handler500 = 'core.views.integrity_error'
+handler404 = 'api.views.page_not_found'
+handler500 = 'api.views.integrity_error'

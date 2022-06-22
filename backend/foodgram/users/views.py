@@ -1,14 +1,14 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, status
-from .models import User, Subscription
-from .serializers import (SetPasswordSerializer, UserReadSerializer,
-                          UserCreateSerializer)
-from .serializers import SubscriptionSerializer
-from rest_framework.response import Response
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+
 from .mixins import CreateDestroyListViewSet
-from rest_framework.permissions import (AllowAny, IsAuthenticated)
+from .models import Subscription, User
+from .serializers import (SetPasswordSerializer, SubscriptionSerializer,
+                          UserCreateSerializer, UserReadSerializer)
 
 
 class UserViewSet(viewsets.ModelViewSet):
