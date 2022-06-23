@@ -1,10 +1,11 @@
 from django.db import IntegrityError
 from django.db.models import Model
 from django.shortcuts import get_object_or_404
-from recipes.models import Recipe
 from rest_framework import mixins, status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+from recipes.models import Recipe
 
 from .serializers import RecipeInfoSerializer
 

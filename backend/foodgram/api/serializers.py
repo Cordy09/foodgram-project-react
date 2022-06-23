@@ -1,32 +1,11 @@
 from drf_extra_fields.fields import Base64ImageField
-from recipes.models import (Ingredient, IngredientsForRecipe, Recipe,
-                            Tag)
 from rest_framework import serializers
+
+from recipes.models import Ingredient, IngredientsForRecipe, Recipe, Tag
 from users.serializers import UserReadSerializer
 
 from .fields import Hex2NameColor
-
-
-def is_unique(list):
-    id_list = []
-    for each in list:
-        id_list.append(each.id)
-    id_set = set(id_list)
-    if len(id_list) == len(id_set):
-        return True
-    else:
-        return False
-
-
-def create_ingredients_for_recipe(recipe, ingredients_for_recipe):
-    ingredients = [
-            IngredientsForRecipe(
-                recipe=recipe,
-                ingredient=each.pop('id'),
-                amount=each.pop('amount')
-            )
-            for each in ingredients_for_recipe]
-    IngredientsForRecipe.objects.bulk_create(ingredients)
+from .utils import create_ingredients_for_recipe, is_unique
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -107,7 +86,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         ).user, image=image, **validated_data)
         create_ingredients_for_recipe(recipe, ingredients_for_recipe)
         recipe.tags.set(tags)
-        recipe.save()
         return recipe
 
     def update(self, recipe, validated_data):
@@ -117,7 +95,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         IngredientsForRecipe.objects.filter(recipe=recipe).delete()
         create_ingredients_for_recipe(new_recipe, ingredients_for_recipe)
         new_recipe.tags.set(tags)
-        new_recipe.save()
         return new_recipe
 
 
