@@ -3,7 +3,6 @@ from rest_framework import serializers
 
 from recipes.models import Ingredient, IngredientsForRecipe, Recipe, Tag
 from users.serializers import UserReadSerializer
-
 from .fields import Hex2NameColor
 from .utils import create_ingredients_for_recipe, is_unique
 

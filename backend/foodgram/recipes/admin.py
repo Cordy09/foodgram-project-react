@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.contrib.admin import display
 
 from users.models import Subscription, User
-
 from .models import Ingredient, IngredientsForRecipe, Recipe, Tag
 
 

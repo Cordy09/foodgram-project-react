@@ -6,7 +6,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from recipes.models import Recipe
-
 from .serializers import RecipeInfoSerializer
 
 
