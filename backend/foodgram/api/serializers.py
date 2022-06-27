@@ -37,6 +37,9 @@ class RecipeSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
+    tags = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(), many=True
+    )
 
     class Meta:
         model = Recipe
@@ -95,6 +98,11 @@ class RecipeSerializer(serializers.ModelSerializer):
         create_ingredients_for_recipe(new_recipe, ingredients_for_recipe)
         new_recipe.tags.set(tags)
         return new_recipe
+
+    def to_representation(self, instance):
+        result = super().to_representation(instance)
+        result['tags'] = TagSerializer(instance.tags.all(), many=True).data
+        return result
 
 
 class IngredientSerializer(serializers.ModelSerializer):

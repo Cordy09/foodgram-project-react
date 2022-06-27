@@ -41,20 +41,14 @@ class RecipesViewSet(viewsets.ModelViewSet):
 
 
 class IngredientViewSet(RetrieveListViewSet):
+    serializer_class = IngredientSerializer
+    pagination_class = None
 
-    search_fields = ('^name',)
-
-    def list(self, request):
-        ingredients = Ingredient.objects.all()
-        serializer = IngredientSerializer(ingredients, many=True)
-        page = self.paginate_queryset(serializer.data)
-        return self.get_paginated_response(page)
-
-    def retrieve(self, request, pk=None):
-        queryset = Ingredient.objects.all()
-        ingredient = get_object_or_404(queryset, pk=pk)
-        serializer = IngredientSerializer(ingredient)
-        return Response(serializer.data)
+    def get_queryset(self):
+        name = self.request.query_params.get('name')
+        if name is None:
+            return Ingredient.objects.all()
+        return Ingredient.objects.filter(name__istartswith=name)
 
 
 class FavoriteViewSet(CreateDestroy):
