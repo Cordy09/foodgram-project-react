@@ -30,12 +30,17 @@ class UserViewSet(viewsets.ModelViewSet):
             return UserCreateSerializer
 
     def perform_create(self, serializer):
-        username = serializer.validated_data.get('username')
-        email = serializer.validated_data.get('email')
-        user_byemail = User.objects.filter(email=email)
-        user_byname = User.objects.filter(username=username)
-        if user_byemail.exists() or user_byname.exists():
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        user = serializer.save()
+        user.set_password(self.request._full_data['password'])
+        user.save()
+
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        serializer = UserReadSerializer(
+            instance=serializer.instance, context={'request': self.request})
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(
         methods=['get'],

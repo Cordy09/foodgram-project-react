@@ -1,4 +1,4 @@
-from backend.foodgram.recipes.models import IngredientsForRecipe
+from recipes.models import IngredientsForRecipe
 
 
 def is_unique(list):
