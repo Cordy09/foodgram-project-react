@@ -12,7 +12,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['62.84.121.56', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['62.84.121.56', '127.0.0.1', 'localhost', 'foodgram-project.ddnsking.com']
 
 USE_X_FORWARDED_HOST = True
 USE_X_FORWARDED_PORT = True
