@@ -7,10 +7,18 @@ from recipes.models import Ingredient
 
 class Command(BaseCommand):
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '-f', '--file',
+            dest='filename',
+            help='specify csv filename',
+            metavar="FILE")
+
     def handle(self, *args, **options):
         Ingredient.objects.all().delete()
+        data = options['filename'] or '../../data/ingredients.csv'
         with open(
-            '../../data/ingredients.csv', 'r', encoding='utf-8'
+            data, 'r', encoding='utf-8'
         ) as cg_csv:
             reader = csv.DictReader(cg_csv)
             for row in reader:

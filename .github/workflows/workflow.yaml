@@ -80,7 +80,7 @@ jobs:
           sudo docker-compose up -d
           docker-compose exec -T backend python3 manage.py migrate
           docker-compose exec -T backend python3 manage.py collectstatic --no-input
-          docker-compose exec -T backend python3 manage.py csv
+          docker-compose exec -T backend python3 manage.py csv --file /data/ingredients.csv
 
 
   send_message:
