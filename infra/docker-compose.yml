@@ -9,9 +9,10 @@ services:
       - ../backend/foodgram/foodgram/.env
 
   backend:
-    build: 
-      context: ../backend/foodgram
-      dockerfile: Dockerfile
+    image: cordy09/foodgram_backend
+    # build: 
+    #   context: ../backend/foodgram
+    #   dockerfile: Dockerfile
     restart: always
     # image: foodgram:latest
     environment:
@@ -26,9 +27,10 @@ services:
       - ../backend/foodgram/foodgram/.env
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: cordy09/foodgram_frontend
+    # build:
+    #   context: ../frontend
+    #   dockerfile: Dockerfile
     volumes:
       - frontend_value:/app/result_build/
 

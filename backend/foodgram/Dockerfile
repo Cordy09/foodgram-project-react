@@ -10,9 +10,6 @@ RUN pip3 install -r ./requirements.txt --no-cache-dir
 
 COPY ./ ./ 
 
+RUN cd foodgram/
 
-ENV DB_NAME foodgram
-ENV DB_PORT 5432 
-
-
-CMD ["gunicorn", "foodgram.wsgi:application", "--bind", "0:8000" ]
+CMD ["gunicorn", "wsgi:application", "--bind", "0:8000" ]
