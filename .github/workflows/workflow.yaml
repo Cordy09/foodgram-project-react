@@ -41,7 +41,7 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/foodgram_backend
           file: ./backend/foodgram/Dockerfile
-          context: ./backend/
+          context: ./backend/foodgram/
       - name: Push to Docker Hub Frontend
         uses: docker/build-push-action@v2
         with:
@@ -64,8 +64,8 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         # stack_file_name: docker-compose.yaml
         script: |
-          cd ../infra/
-          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_backend
+          cd ./infra/
+          sudo docker-compose pull
           sudo docker-compose stop
           sudo docker-compose rm backend
           sudo docker-compose rm frontend
