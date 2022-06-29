@@ -57,6 +57,7 @@ class FavoriteViewSet(CreateDestroy):
 
 class ShoppingCartViewSet(CreateDestroy):
     queryset = RecipeInCart.objects.all()
+    pagination_class = None
 
 
 @api_view(['GET'])

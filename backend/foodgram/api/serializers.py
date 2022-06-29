@@ -16,8 +16,8 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class IngredientForRecipeSerializer(serializers.ModelSerializer):
-    id = serializers.PrimaryKeyRelatedField(
-        queryset=Ingredient.objects.all(),
+    id = serializers.IntegerField(
+        source='ingredient.id',
         required=True
     )
     name = serializers.CharField(source='ingredient.name', required=False)
@@ -49,16 +49,15 @@ class RecipeSerializer(serializers.ModelSerializer):
         lookup_field = 'name'
 
     def validate_ingredients(self, data):
-        ingredients_id = []
-        for each in data:
-            ingredients_id.append(each['id'])
+        ingredients_id = [each['ingredient']['id'] for each in data]
         if is_unique(ingredients_id):
             return data
         else:
             raise serializers.ValidationError('Поле должно быть уникальным')
 
     def validate_tags(self, data):
-        if is_unique(data):
+        tags_id = [each.id for each in data]
+        if is_unique(tags_id):
             return data
         else:
             raise serializers.ValidationError('Поле должно быть уникальным')
