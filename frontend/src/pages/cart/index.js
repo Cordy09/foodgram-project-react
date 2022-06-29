@@ -51,12 +51,6 @@ const Cart = ({ updateOrders, orders }) => {
           modifier='style_dark-blue'
           clickHandler={downloadDocument}
         >Скачать список</Button>}
-        <Pagination
-        count={recipesCount}
-        limit={6}
-        page={recipesPage}
-        onPageChange={page => setRecipesPage(page)}
-      />
       </div>
     </Container>
   </Main>
