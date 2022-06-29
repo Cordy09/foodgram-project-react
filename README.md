@@ -43,4 +43,4 @@ docker-compose exec backend python manage.py csv
 
 Автор бэкенда: Коваленко Анна
 
-![example workflow](https://github.com/Cordy09foodgram-project-react/actions/workflows/workflow.yml/badge.svg)
+![example workflow](https://github.com/Cordy09/foodgram-project-react/actions/workflows/workflow.yaml/badge.svg)
