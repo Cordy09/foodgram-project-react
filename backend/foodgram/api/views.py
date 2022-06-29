@@ -4,13 +4,13 @@ from django.shortcuts import get_object_or_404, render
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from recipes.models import Favorite, Ingredient, Recipe, RecipeInCart, Tag
 from .filters import RecipeFilter
 from .mixins import CreateDestroy, RetrieveListViewSet
+from .paginations import RecipePagination
 from .permissions import IsRecipeOwnerOrReadOnly
 from .serializers import IngredientSerializer, RecipeSerializer, TagSerializer
 
@@ -34,7 +34,7 @@ class TagsViewSet(RetrieveListViewSet):
 class RecipesViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
-    pagination_class = PageNumberPagination
+    pagination_class = RecipePagination
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
     permission_classes = [IsRecipeOwnerOrReadOnly]
