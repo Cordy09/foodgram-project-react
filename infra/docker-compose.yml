@@ -9,7 +9,7 @@ services:
       - ../backend/foodgram/foodgram/.env
 
   backend:
-    image: cordy09/foodgram_backend
+    image: cordy09/foodgram_backend:latest
     restart: always
     environment:
       - DB_HOST=db
@@ -23,7 +23,7 @@ services:
       - ../backend/foodgram/foodgram/.env
 
   frontend:
-    image: cordy09/foodgram_frontend
+    image: cordy09/foodgram_frontend:latest
     volumes:
       - frontend_value:/app/result_build/
 
